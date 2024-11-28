@@ -1,0 +1,6 @@
+github.com/speedata/goxml v1.0.1 h1:YAzy7kajDo2hhSLmogHQTXcnIvXj1+sJrcVCscoJfNQ=
+github.com/speedata/goxml v1.0.1/go.mod h1:G++cv0h2rC8ltAhvQmANDgwMbKRd3MetXlF8PLob6dw=
+github.com/speedata/goxpath v1.0.1 h1:pGbqiS0FZ34cQOQ4yJ3t6buQoW08lScEqVaqZuqhcnI=
+github.com/speedata/goxpath v1.0.1/go.mod h1:CmCts6PxMpNgypsDMcwKXBdKtArjMyAUfEgQhqoLd/s=
+golang.org/x/net v0.31.0 h1:68CPQngjLL0r2AlUKiSxtQFKvzRVbnzLwMUn5SzcLHo=
+golang.org/x/net v0.31.0/go.mod h1:P4fl1q7dY2hnZFxEk4pPSkDHF+QqjitcnDjUQyMM+pM=
