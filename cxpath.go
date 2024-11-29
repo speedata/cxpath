@@ -10,9 +10,9 @@ import (
 
 // A Context stores the current state of the XPath parser.
 type Context struct {
-	P   *goxpath.Parser
-	Seq goxpath.Sequence
-	Err error
+	P     *goxpath.Parser
+	Seq   goxpath.Sequence
+	Error error
 }
 
 // NewFromFile returns a new context from a file name.
@@ -39,6 +39,15 @@ func (ctx *Context) String() string {
 	return ctx.Seq.Stringvalue()
 }
 
+// Int returns the number value as an integer
+func (ctx *Context) Int() int {
+	i, err := ctx.Seq.IntValue()
+	if err != nil {
+		ctx.Error = err
+	}
+	return i
+}
+
 // SetNamespace sets a prefix/URI pair for XPath queries.
 func (ctx *Context) SetNamespace(prefix, uri string) *Context {
 	ctx.P.Ctx.Namespaces[prefix] = uri
@@ -52,7 +61,7 @@ func (ctx *Context) Root() *Context {
 			Ctx: goxpath.CopyContext(ctx.P.Ctx),
 		},
 	}
-	newContext.Seq, newContext.Err = newContext.P.Ctx.Root()
+	newContext.Seq, newContext.Error = newContext.P.Ctx.Root()
 	return &newContext
 }
 
@@ -88,6 +97,6 @@ func (ctx *Context) Eval(eval string) *Context {
 			Ctx: goxpath.CopyContext(ctx.P.Ctx),
 		},
 	}
-	newContext.Seq, newContext.Err = newContext.P.Evaluate(eval)
+	newContext.Seq, newContext.Error = newContext.P.Evaluate(eval)
 	return &newContext
 }
