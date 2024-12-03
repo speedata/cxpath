@@ -48,6 +48,15 @@ func (ctx *Context) Int() int {
 	return i
 }
 
+// Bool returns the boolean value of the sequence.
+func (ctx *Context) Bool() bool {
+	b, err := goxpath.BooleanValue(ctx.Seq)
+	if err != nil {
+		ctx.Error = err
+	}
+	return b
+}
+
 // SetNamespace sets a prefix/URI pair for XPath queries.
 func (ctx *Context) SetNamespace(prefix, uri string) *Context {
 	ctx.P.Ctx.Namespaces[prefix] = uri
