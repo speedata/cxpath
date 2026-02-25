@@ -2,8 +2,6 @@
 
 # cxpath - a programmer's friendly interface to XPath
 
-**Experimental, not ready for production use**
-
 With cxpath you can access XML files via XPath 2.0 in a Go friendly matter.
 
 ```xml
@@ -52,8 +50,34 @@ func main() {
 ```
 
 
+## Error handling
+
+The constructors `NewFromFile` and `NewFromReader` return errors the usual Go way.
+For all other methods, errors are stored in the `Error` field of the returned `Context` so that method chaining stays clean:
+
+```go
+root := ctx.Root()
+result := root.Eval("some/xpath")
+if result.Error != nil {
+    log.Fatal(result.Error)
+}
+fmt.Println(result.String())
+```
+
+The same applies to the `Each` iterator. If the XPath expression is invalid, the iterator yields a single `Context` with the `Error` field set:
+
+```go
+for item := range root.Each("some/xpath") {
+    if item.Error != nil {
+        log.Fatal(item.Error)
+    }
+    fmt.Println(item.Int())
+}
+```
+
+The value accessors `Int()` and `Bool()` also store conversion errors in `Context.Error` rather than returning them directly.
+
 ## Installation
 
     go get github.com/speedata/cxpath
-
 

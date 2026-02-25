@@ -1,6 +1,7 @@
 package cxpath
 
 import (
+	"fmt"
 	"io"
 	"iter"
 	"os"
@@ -21,6 +22,7 @@ func NewFromFile(filename string) (*Context, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer r.Close()
 	return NewFromReader(r)
 }
 
@@ -35,6 +37,7 @@ func NewFromReader(r io.Reader) (*Context, error) {
 	}
 	return &ctx, nil
 }
+// String returns the string value of the current sequence.
 func (ctx *Context) String() string {
 	return ctx.Seq.Stringvalue()
 }
@@ -80,9 +83,17 @@ func (ctx *Context) Each(eval string) iter.Seq[*Context] {
 	p := &goxpath.Parser{
 		Ctx: goxpath.CopyContext(ctx.P.Ctx),
 	}
-	seq, _ := p.Evaluate(eval)
+	seq, err := safeEvaluate(p, eval)
 
 	return func(yield func(*Context) bool) {
+		if err != nil {
+			errCtx := &Context{
+				P:     p,
+				Error: err,
+			}
+			yield(errCtx)
+			return
+		}
 		for _, itm := range seq {
 			newContext := Context{
 				P: &goxpath.Parser{
@@ -106,6 +117,17 @@ func (ctx *Context) Eval(eval string) *Context {
 			Ctx: goxpath.CopyContext(ctx.P.Ctx),
 		},
 	}
-	newContext.Seq, newContext.Error = newContext.P.Evaluate(eval)
+	newContext.Seq, newContext.Error = safeEvaluate(newContext.P, eval)
 	return &newContext
+}
+
+// safeEvaluate wraps Parser.Evaluate and recovers from panics that goxpath may
+// raise for invalid XPath expressions.
+func safeEvaluate(p *goxpath.Parser, expr string) (seq goxpath.Sequence, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			err = fmt.Errorf("xpath evaluation panic: %v", r)
+		}
+	}()
+	return p.Evaluate(expr)
 }
