@@ -37,6 +37,7 @@ func NewFromReader(r io.Reader) (*Context, error) {
 	}
 	return &ctx, nil
 }
+
 // String returns the string value of the current sequence.
 func (ctx *Context) String() string {
 	return ctx.Seq.Stringvalue()
